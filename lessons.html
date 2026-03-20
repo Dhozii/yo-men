@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lessons - Programming Learning System</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f5f5f5; color:#555; padding:20px; }
+.container { max-width:800px; margin:auto; background:white; padding:20px; border-radius:15px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); }
+h1 { color:#A389D4; text-align:center; margin-bottom:20px; }
+h2 { color:#A389D4; margin-bottom:10px; }
+button { padding:10px 20px; border:none; border-radius:10px; margin:5px; cursor:pointer; color:white; background:#A389D4; }
+button:disabled { opacity:0.6; cursor:default; }
+#backBtn { display:block; margin-top:15px; background:#A389D4; }
+p { white-space: pre-line; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1 id="lessonTitle">Lesson Title</h1>
+<p id="lessonContent">Lesson Content</p>
+<button id="prevBtn" onclick="prevLesson()">Previous</button>
+<button id="nextBtn" onclick="nextLesson()">Next</button>
+<br>
+<button id="backBtn" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+</div>
+<script>
+// ---------------- LESSON DATA ----------------
+var lessonsData = {
+    python: {
+        beginner: [
+            {title:"Introduction to Python", content:"Python is a high-level programming language used for general-purpose programming."},
+            {title:"Variables & Data Types", content:"Variables store data. Common types: int, float, string, bool."},
+            {title:"Operators", content:"Arithmetic, comparison, logical operators."},
+            {title:"Input & Output", content:"Use input() to get user input and print() to display."},
+            {title:"Conditionals", content:"if, elif, else statements for decision making."},
+            {title:"Loops", content:"for and while loops repeat code blocks."},
+            {title:"Functions", content:"Define reusable code using def function_name():"},
+            {title:"Lists & Tuples", content:"Lists and tuples store multiple values. Lists are mutable; tuples are not."},
+            {title:"Dictionaries", content:"Store key-value pairs for easy lookup."},
+            {title:"Modules", content:"Import modules to use external code and libraries."}
+        ],
+        intermediate: [
+            {title:"File Handling", content:"Read and write files using open() and file methods."},
+            {title:"Exception Handling", content:"Use try, except blocks to handle errors."},
+            {title:"Sets", content:"Sets store unique elements and allow fast operations."},
+            {title:"Comprehensions", content:"List, dictionary, and set comprehensions for concise code."},
+            {title:"String Manipulation", content:"Learn slicing, formatting, and string methods."},
+            {title:"Classes & Objects", content:"Introduction to object-oriented programming in Python."},
+            {title:"Inheritance", content:"Extend classes using inheritance."},
+            {title:"Decorators", content:"Functions that modify other functions."},
+            {title:"Lambda & Map", content:"Anonymous functions and functional programming techniques."},
+            {title:"Modules & Packages", content:"Organize code into modules and packages."}
+        ],
+        pro: [
+            {title:"Advanced OOP", content:"Polymorphism, encapsulation, and abstract classes."},
+            {title:"Iterators & Generators", content:"Efficient looping using iterators and generators."},
+            {title:"Regular Expressions", content:"Pattern matching in strings using re module."},
+            {title:"Context Managers", content:"Use 'with' for resource management."},
+            {title:"Multithreading", content:"Run multiple threads concurrently."},
+            {title:"Networking", content:"Sockets and HTTP requests."},
+            {title:"Database Integration", content:"Connect to databases using SQLite or MySQL."},
+            {title:"Testing", content:"Unit testing with unittest module."},
+            {title:"Performance Optimization", content:"Profiling and improving code efficiency."},
+            {title:"Advanced Libraries", content:"NumPy, Pandas, and other powerful libraries."}
+        ]
+    },
+java: {
+        beginner: [
+            {title:"Introduction to Java", content:"Java is a high-level, object-oriented programming language."},
+            {title:"Variables & Data Types", content:"int, float, double, char, boolean."},
+            {title:"Operators", content:"Arithmetic, comparison, logical operators."},
+            {title:"Input & Output", content:"Using Scanner for input and System.out.println for output."},
+            {title:"Conditionals", content:"if, else if, else statements."},
+            {title:"Loops", content:"for, while, and do-while loops."},
+            {title:"Methods", content:"Define reusable code blocks with return types."},
+            {title:"Arrays", content:"Store multiple values in a fixed-size array."},
+            {title:"Strings", content:"String manipulation and methods."},
+            {title:"Basic Classes", content:"Introduction to classes and objects in Java."}
+        ],
+        intermediate: [
+            {title:"OOP Concepts", content:"Encapsulation, inheritance, and polymorphism."},
+            {title:"Constructors", content:"Special methods to initialize objects."},
+            {title:"ArrayLists", content:"Dynamic arrays for flexible storage."},
+            {title:"Exception Handling", content:"Try-catch blocks for managing errors."},
+            {title:"File I/O", content:"Read and write files using Java IO classes."},
+            {title:"Interfaces", content:"Define abstract methods for classes to implement."},
+            {title:"Packages", content:"Organize code into packages and import them."},
+            {title:"Generics", content:"Write type-safe code with generics."},
+            {title:"Collections Framework", content:"Lists, sets, and maps."},
+            {title:"Recursion", content:"Functions calling themselves for iterative solutions."}
+        ],
+        pro: [
+            {title:"Advanced OOP", content:"Abstract classes, interfaces, and polymorphism in depth."},
+            {title:"Threads & Concurrency", content:"Multithreading and synchronized methods."},
+            {title:"Networking", content:"TCP/IP sockets, HTTP connections."},
+            {title:"Streams & Lambda", content:"Functional programming in Java."},
+            {title:"Annotations", content:"Metadata for classes and methods."},
+            {title:"Reflection", content:"Inspect classes and objects at runtime."},
+            {title:"Database Connectivity", content:"JDBC to connect with databases."},
+            {title:"Design Patterns", content:"Singleton, Factory, Observer patterns."},
+            {title:"JavaFX GUI", content:"Build simple GUI applications."},
+            {title:"Performance & Profiling", content:"Optimize code execution."}
+        ]
+    }
+};
+// ---------------- URL PARAMS ----------------
+var urlParams = new URLSearchParams(window.location.search);
+var language = urlParams.get("language") || "python";
+var level = urlParams.get("level") || "beginner";
+var currentArray = lessonsData[language][level];
+var currentLesson = 0;
+// ---------------- FUNCTIONS ----------------
+function showLesson() {
+    var lesson = currentArray[currentLesson];
+    document.getElementById("lessonTitle").innerText = lesson.title;
+    document.getElementById("lessonContent").innerText = lesson.content;
+    document.getElementById("prevBtn").disabled = currentLesson === 0;
+    document.getElementById("nextBtn").disabled = currentLesson === currentArray.length - 1;
+}
+function nextLesson() {
+    if (currentLesson < currentArray.length - 1) {
+        currentLesson++;
+        showLesson();
+    }
+}
+function prevLesson() {
+    if (currentLesson > 0) {
+        currentLesson--;
+        showLesson();
+    }
+}
+// ---------------- INITIALIZE ----------------
+showLesson();
+</script>
+</body>
+</html>
+   

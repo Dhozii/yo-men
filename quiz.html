@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz - Programming Learning System</title>
+<style>
+body { font-family: Arial, sans-serif; margin:0; background-color: #f5f5f5; }
+.container { max-width: 600px; margin: 20px auto; padding: 10px; }
+h1 { color: #A389D4; font-size: 28px; text-align: center; margin-bottom: 20px; }
+.quiz-box { background-color: white; padding: 20px; border-radius: 15px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); margin-bottom: 15px; }
+.quiz-box p { color: #555; margin-bottom: 15px; }
+button { background-color: #A389D4; color: white; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; margin: 5px 0; width: 100%; }
+button:hover { background-color: #8e74c1; }
+.back-btn { margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1 id="quiz-title">Quiz</h1>
+<div class="quiz-box">
+    <p id="question"></p>
+    <div id="options"></div>
+</div>
+<button class="back-btn" onclick="backToDashboard()">Back to Dashboard</button>
+</div>
+<script>
+// --- GET LANGUAGE AND LEVEL ---
+const params = new URLSearchParams(window.location.search);
+const language = params.get("language") || "python";
+const level = params.get("level") || "beginner";
+document.getElementById("quiz-title").innerText = `${language.toUpperCase()} Quiz (${level.charAt(0).toUpperCase() + level.slice(1)})`;
+// --- QUIZ DATA ---
+const quizData = {
+    python: {
+        beginner: [
+            {q:"Python is a programming language.", options:["True","False"], answer:"True"},
+            {q:"Variables store data values.", options:["True","False"], answer:"True"},
+            {q:"The 'for' loop is used for iteration.", options:["True","False"], answer:"True"},
+            {q:"Lists store single values only.", options:["True","False"], answer:"False"},
+            {q:"def keyword is used to define functions.", options:["True","False"], answer:"True"},
+            {q:"Python uses curly braces {} to define code blocks.", options:["True","False"], answer:"False"},
+            {q:"You can assign multiple variables in one line.", options:["True","False"], answer:"True"},
+            {q:"Comments start with # in Python.", options:["True","False"], answer:"True"},
+            {q:"Strings are immutable in Python.", options:["True","False"], answer:"True"},
+            {q:"Python supports object-oriented programming.", options:["True","False"], answer:"True"}
+        ],
+        intermediate: [
+            {q:"Python dictionaries store data as key-value pairs.", options:["True","False"], answer:"True"},
+            {q:"The 'while' loop executes at least once.", options:["True","False"], answer:"False"},
+            {q:"Python supports multiple inheritance.", options:["True","False"], answer:"True"},
+            {q:"Decorators modify the behavior of functions.", options:["True","False"], answer:"True"},
+            {q:"The 'with' statement is used for file handling.", options:["True","False"], answer:"True"},
+            {q:"Generators produce values using yield.", options:["True","False"], answer:"True"},
+            {q:"Lambda functions can have multiple expressions.", options:["True","False"], answer:"False"},
+            {q:"List comprehensions provide a concise way to create lists.", options:["True","False"], answer:"True"},
+            {q:"Python is statically typed.", options:["True","False"], answer:"False"},
+            {q:"Exception handling uses try and except blocks.", options:["True","False"], answer:"True"}
+        ],
+        pro: [
+            {q:"Python supports metaclasses.", options:["True","False"], answer:"True"},
+            {q:"Python's GIL allows true multi-threading.", options:["True","False"], answer:"False"},
+            {q:"You can override __str__ to customize object printing.", options:["True","False"], answer:"True"},
+            {q:"Decorators can take arguments.", options:["True","False"], answer:"True"},
+            {q:"The functools module provides useful higher-order functions.", options:["True","False"], answer:"True"},
+            {q:"Context managers can be custom-defined.", options:["True","False"], answer:"True"},
+            {q:"Python supports operator overloading.", options:["True","False"], answer:"True"},
+            {q:"The __init__ method is called when an object is deleted.", options:["True","False"], answer:"False"},
+            {q:"Python has both shallow and deep copy options.", options:["True","False"], answer:"True"},
+            {q:"You can dynamically add attributes to classes.", options:["True","False"], answer:"True"}
+        ]
+    },
+   java: {
+        beginner: [
+            {q:"Java is a programming language.", options:["True","False"], answer:"True"},
+            {q:"Java code must be inside a class.", options:["True","False"], answer:"True"},
+            {q:"System.out.println prints text to console.", options:["True","False"], answer:"True"},
+            {q:"Java uses indentation to define blocks.", options:["True","False"], answer:"False"},
+            {q:"int is a primitive data type in Java.", options:["True","False"], answer:"True"},
+            {q:"Java supports object-oriented programming.", options:["True","False"], answer:"True"},
+            {q:"Variables can be declared without a type in Java.", options:["True","False"], answer:"False"},
+            {q:"The main method is public static void main(String[] args).", options:["True","False"], answer:"True"},
+            {q:"Java supports inheritance.", options:["True","False"], answer:"True"},
+            {q:"Comments in Java start with // for single line.", options:["True","False"], answer:"True"}
+        ],
+        intermediate: [
+            {q:"Abstract classes cannot be instantiated.", options:["True","False"], answer:"True"},
+            {q:"Interfaces can have default methods.", options:["True","False"], answer:"True"},
+            {q:"Java supports multiple inheritance through classes.", options:["True","False"], answer:"False"},
+            {q:"The 'super' keyword refers to parent class.", options:["True","False"], answer:"True"},
+            {q:"You can overload methods in Java.", options:["True","False"], answer:"True"},
+            {q:"Packages help organize Java classes.", options:["True","False"], answer:"True"},
+            {q:"String is immutable in Java.", options:["True","False"], answer:"True"},
+            {q:"You can use 'this' to refer to current object.", options:["True","False"], answer:"True"},
+            {q:"Java arrays have fixed size.", options:["True","False"], answer:"True"},
+            {q:"Java supports multithreading.", options:["True","False"], answer:"True"}
+        ],
+        pro: [
+            {q:"Java supports generics.", options:["True","False"], answer:"True"},
+            {q:"The volatile keyword prevents caching of variables.", options:["True","False"], answer:"True"},
+            {q:"Java supports lambda expressions.", options:["True","False"], answer:"True"},
+            {q:"Java's Stream API allows functional-style operations.", options:["True","False"], answer:"True"},
+            {q:"Synchronized methods allow thread-safe operations.", options:["True","False"], answer:"True"},
+            {q:"Reflection allows inspecting classes at runtime.", options:["True","False"], answer:"True"},
+            {q:"Java supports annotations.", options:["True","False"], answer:"True"},
+            {q:"The transient keyword skips serialization.", options:["True","False"], answer:"True"},
+            {q:"The 'final' keyword prevents method overriding.", options:["True","False"], answer:"True"},
+            {q:"Inner classes can access outer class members.", options:["True","False"], answer:"True"}
+        ]
+    }
+};
+// --- CURRENT QUIZ ---
+let currentQuiz = quizData[language][level];
+// --- STATE ---
+let quizIndex = 0;
+let score = 0;
+let wrongQuestions = [];
+// --- FUNCTIONS ---
+function showQuestion(){
+    if(quizIndex < currentQuiz.length){
+        document.getElementById("question").innerText = currentQuiz[quizIndex].q;
+        let optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = "";
+        currentQuiz[quizIndex].options.forEach(opt => {
+            let btn = document.createElement("button");
+            btn.innerText = opt;
+            btn.onclick = () => selectAnswer(opt);
+            optionsDiv.appendChild(btn);
+        });
+    } else {
+        // --- SAVE SCORE PER USER ---
+        const username = localStorage.getItem('username');
+        const key = `${username}-${language}-${level}-lastScore`;
+        localStorage.setItem(key, score);
+        if(wrongQuestions.length > 0){
+            alert("Wrong Questions:\n" + wrongQuestions.join("\n"));
+        }
+        alert(`Quiz Finished! You scored ${score}/${currentQuiz.length}`);
+        quizIndex = 0;
+        score = 0;
+        wrongQuestions = [];
+        window.location.href = "dashboard.html";
+    }
+}
+function selectAnswer(option){
+    if(option === currentQuiz[quizIndex].answer){
+        score++;
+    } else {
+        wrongQuestions.push(currentQuiz[quizIndex].q);
+    }
+    quizIndex++;
+    showQuestion();
+}
+function backToDashboard(){
+    window.location.href = "dashboard.html";
+}
+// --- INIT ---
+showQuestion();
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Programming Learning System</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f5f5f5;
+}
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 10px;
+}
+h1 {
+    color: #A389D4;
+    font-size: 28px;
+}
+p {
+    color: #555;
+}
+.course-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+}
+.course-card h2 {
+    color: #A389D4;
+    margin-bottom: 8px;
+}
+.course-card p {
+    color: #555;
+    margin-bottom: 12px;
+}
+.level-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.level-buttons button {
+    background-color: #A389D4;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+.level-buttons button:hover {
+    background-color: #8e74c1;
+}
+.quick-grid {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+.quick-grid button {
+    flex: 1;
+    margin: 0 5px;
+    background-color: #A389D4;
+    color: white;
+    padding: 15px 0;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.quick-grid button:hover {
+    background-color: #8e74c1;
+}
+.logout-btn {
+    margin-top: 15px;
+    background-color: #A389D4;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.logout-btn:hover {
+    background-color: #8e74c1;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1 id="greeting">Hi, User</h1>
+    <p>Status: Welcome to your learning dashboard</p>
+    <!-- Python Section -->
+    <div class="course-card">
+        <h2>Python</h2>
+        <p>Learn Python step by step from basics to advanced topics.</p>
+        <div class="level-buttons">
+            <button onclick="goToLessons('python','beginner')">Lessons: Beginner</button>
+            <button onclick="goToLessons('python','intermediate')">Lessons: Intermediate</button>
+            <button onclick="goToLessons('python','pro')">Lessons: Pro</button>
+        </div>
+        <div class="level-buttons">
+            <button onclick="goToQuiz('python','beginner')">Quiz: Beginner</button>
+            <button onclick="goToQuiz('python','intermediate')">Quiz: Intermediate</button>
+            <button onclick="goToQuiz('python','pro')">Quiz: Pro</button>
+        </div>
+    </div>
+    <!-- Java Section -->
+    <div class="course-card">
+        <h2>Java</h2>
+        <p>Learn Java programming from fundamental concepts to advanced features.</p>
+        <div class="level-buttons">
+            <button onclick="goToLessons('java','beginner')">Lessons: Beginner</button>
+            <button onclick="goToLessons('java','intermediate')">Lessons: Intermediate</button>
+            <button onclick="goToLessons('java','pro')">Lessons: Pro</button>
+        </div>
+        <div class="level-buttons">
+            <button onclick="goToQuiz('java','beginner')">Quiz: Beginner</button>
+            <button onclick="goToQuiz('java','intermediate')">Quiz: Intermediate</button>
+            <button onclick="goToQuiz('java','pro')">Quiz: Pro</button>
+        </div>
+    </div>
+    <div class="quick-grid">
+        <button onclick="window.location.href='progress-menu.html'">Check Progress</button>
+        <button onclick="window.location.href='resources.html'">Resources</button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+</div>
+<script>
+// Greet the logged-in user
+var username = localStorage.getItem("username");
+if (!username) {
+    username = "User";
+}
+document.getElementById("greeting").innerText = "Hi, " + username;
+// Lesson and quiz navigation functions
+function goToLessons(language, level){
+    window.location.href = `lessons.html?language=${language}&level=${level}`;
+}
+function goToQuiz(language, level){
+    window.location.href = `quiz.html?language=${language}&level=${level}`;
+}
+// Logout function
+function logout() {
+    localStorage.removeItem("username");
+    window.location.href = "login.html";
+}
+</script>
+</body>
+</html>
